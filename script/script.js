@@ -158,6 +158,11 @@ function removeCheckedAllItems(elements){
   })
 }
 
+function hideContent(){
+  document.querySelector('.todo-list').hasChildNodes() ? document.querySelector('.footer').classList.remove('hide') :
+  document.querySelector('.footer').classList.add('hide');
+}
+
 function updateClearBtn(){
   let listItems = document.querySelectorAll('.todo-list__item');
   listItems.forEach(el=>{

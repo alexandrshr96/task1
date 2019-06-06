@@ -64,6 +64,10 @@ a:link, a:visited, a:active{
   color: #e6e6e6;
 }
 
+.footer.hide{
+  display: none;
+}
+
 .toggle-all{
   position: absolute;
   display: none;
