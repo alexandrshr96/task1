@@ -99,9 +99,6 @@ a:link, a:visited, a:active{
   border-bottom: 1px solid #ededed;
 }
 
-.todo-list__item:first-child{
-  display: none;
-}
 
 .todo-list__item-content{
   display: flex;
@@ -213,6 +210,11 @@ a:link, a:visited, a:active{
   border: none;
   cursor: pointer;
   color: #777;
+  opacity: 1;
+}
+
+.clear-btn.show{
+  opacity: 1;
 }
 
 .clear-btn:hover{

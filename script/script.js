@@ -2,8 +2,38 @@ const li = document.querySelector('.todo-list__item');
 
 (reloadTodo)();
 
-function createLiElement(){
+/*function createLiElement(){
   return li.cloneNode(true);
+}*/
+
+function createLiElement(){
+  let li = document.createElement('li'),
+    div = document.createElement('div'),
+    input = document.createElement('input'),
+    label = document.createElement('label'),
+    span = document.createElement('span'),
+    button = document.createElement('button');
+
+  li.setAttribute('class','todo-list__item');
+  div.setAttribute('class', 'todo-list__item-content');
+  input.setAttribute('type', 'checkbox');
+  input.setAttribute('id', 'todo-list__item-check');
+  input.setAttribute('class', 'todo-list__item-check');
+  label.setAttribute('class','todo-list__item-check-label');
+  label.setAttribute('for', 'todo-list__item-check');
+  span.setAttribute('class', 'todo-list__item-text');
+  button.setAttribute('class', 'todo-list__item-close');
+  button.innerText = 'x';
+
+  div.appendChild(input);
+  div.appendChild(label);
+  div.appendChild(span);
+  div.appendChild(button);
+
+  li.appendChild(div);
+
+  return li;
+
 }
 
 function insertLi(){
@@ -128,6 +158,17 @@ function removeCheckedAllItems(elements){
   })
 }
 
+function updateClearBtn(){
+  let listItems = document.querySelectorAll('.todo-list__item');
+  listItems.forEach(el=>{
+    if(el.querySelector('.todo-list__item-check-label').classList.contains('check')){
+      document.querySelector('.clear-btn').classList.add('show');
+    }else{
+      document.querySelector('.clear-btn').classList.remove('show');
+    }
+  })
+}
+
 document.querySelector('.header__input').addEventListener('change',(e)=>{
   const liElem = insertLi();
   let obj = createObjForStorage(liElem);
@@ -146,7 +187,7 @@ document.querySelector('.main').addEventListener('click',(e)=>{
     updateStatusLi(id);
     target.classList.toggle('check');
     updateCounter();
-
+    //updateClearBtn();
   }else if(target.className == 'todo-list__item-close'){
     const id = target.closest('.todo-list__item-content').getAttribute('id');
     updateLocalArray(id);
@@ -155,10 +196,9 @@ document.querySelector('.main').addEventListener('click',(e)=>{
   }else if(target.className == 'toggle-all-label'){
     let elementsNode = document.querySelectorAll('.todo-list__item-check + label'),
     elements = Array.prototype.slice.call(elementsNode);
-    console.log(elements);
-    
     elements.every(el=> el.classList.contains('check')) ? removeCheckedAllItems(elements) : checkedAllItems(elements);
     updateCounter();
+    //updateClearBtn();
   }
 })
 
