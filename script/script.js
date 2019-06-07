@@ -115,6 +115,7 @@ function reloadTodo1(){
     createFilteredList(mas);
 
   }
+
   updateCounter();
   watchFooterState();
   watchToggleBtnState();
@@ -271,8 +272,10 @@ document.querySelector('.header__input').addEventListener('change',(e)=>{
   const liElem = insertLi();
   let obj = createObjForStorage(liElem);
   addObjtoStorage(obj);
+
   document.querySelector('.todo-list').appendChild(liElem);
   e.target.value = '';
+
   updateCounter();
   globalReloadlist(getLocalStorage('footer-filter'));
   watchFooterState();
@@ -292,6 +295,7 @@ document.querySelector('.main').addEventListener('click',(e)=>{
     const id = target.closest('.todo-list__item-content').getAttribute('id');
     updateStatusLi(id);
     target.classList.toggle('check');
+
     updateCounter();
     globalReloadlist(getLocalStorage('footer-filter'));
     watchToggleBtnState();
@@ -299,11 +303,16 @@ document.querySelector('.main').addEventListener('click',(e)=>{
     const id = target.closest('.todo-list__item-content').getAttribute('id');
     updateLocalArray(id);
     target.closest('.todo-list__item').remove();
+
     updateCounter();
+    watchToggleBtnState();
+    watchClearBtnState();
+    watchFooterState();
   }else if(target.className == 'toggle-all-label'){
     let elementsNode = document.querySelectorAll('.todo-list__item-check + label'),
     elements = Array.prototype.slice.call(elementsNode);
     elements.every(el=> el.classList.contains('check')) ? removeCheckedAllItems(elements) : checkedAllItems(elements);
+   
     updateCounter();
     watchToggleBtnState();
     watchClearBtnState();
@@ -316,6 +325,7 @@ document.querySelector('.footer').addEventListener('click',(e)=>{
   if(target.classList.contains('clear-btn')){
     clearCompleted();
     removeChildren();
+
     watchToggleBtnState();
     watchClearBtnState();
     watchFooterState();
