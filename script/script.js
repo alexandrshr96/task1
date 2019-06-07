@@ -16,51 +16,62 @@ const store = {
 
 (reloadTodo1)();
 
+function generateID() {
+  const id = new Date()
+  return id.getTime()
+}
+
 
 function createLiElement(){
   let li = document.createElement('li');
-   /* div = document.createElement('div');
-
-  let  input = document.createElement('input'),
-    input1 = document.createElement('input'),
-    label = document.createElement('label'),
-    span = document.createElement('span'),
-    button = document.createElement('button');*/
+  const ID = generateID();
 
   li.setAttribute('class','todo-list__item');
-  /*div.setAttribute('class', 'todo-list__item-content');
-  input.setAttribute('type', 'checkbox');
-  input.setAttribute('id', 'todo-list__item-check');
-  input.setAttribute('class', 'todo-list__item-check');
-  input1.setAttribute('class', 'edit');
-  label.setAttribute('class','todo-list__item-check-label');
-  label.setAttribute('for', 'todo-list__item-check');
-  span.setAttribute('class', 'todo-list__item-text');
-  button.setAttribute('class', 'todo-list__item-close');
-  button.innerText = 'x';
-
-
-  div.appendChild(input);
-  div.appendChild(label);
-  div.appendChild(span);
-  div.appendChild(button);
-
-  li.appendChild(div);
-  li.appendChild(input1);*/
 
   li.innerHTML = '<div class="todo-list__item-content"> <input type="checkbox" id="todo-list__item-check" class="todo-list__item-check"> <label class="todo-list__item-check-label" for="todo-list__item-check"></label> <span class="todo-list__item-text"></span><button class="todo-list__item-close">x</button></div><input class="edit">';
+  li.querySelector('.todo-list__item-text').innerText = document.querySelector('.header__input').value;
+  li.querySelector('.todo-list__item-content').setAttribute('id', ID);
 
+  li.querySelector('button').addEventListener('click',(e)=>{
+    const id = e.target.closest('.todo-list__item-content').getAttribute('id');
+    updateLocalArray(id);
+    e.target.closest('.todo-list__item').remove();
+
+    updateCounter();
+    watchToggleBtnState();
+    watchClearBtnState();
+    watchFooterState();
+  });
+
+  li.querySelector('label').addEventListener('click',(e)=>{
+    const id = e.target.closest('.todo-list__item-content').getAttribute('id');
+    updateStatusLi(id);
+    e.target.classList.toggle('check');
+
+    updateCounter();
+    globalReloadlist(store.getItem('footer-filter'));
+    watchToggleBtnState();
+  });
+
+  li.querySelector('span').addEventListener('dblclick',(e)=>{
+      let input = e.target.closest('.todo-list__item').querySelector('.edit');
+      const id = e.target.closest('.todo-list__item').querySelector('.todo-list__item-content').getAttribute('id');
+
+      input.classList.add('show');
+      input.focus();
+
+      input.addEventListener('change',(e)=>{
+        updateLiValue(id, input.value);
+        globalReloadlist(store.getItem('footer-filter'));
+      })
+      input.addEventListener('blur',(e)=>{
+        e.target.classList.remove('show');
+      })
+  });
   return li;
 
 }
 
-function createFullLiElement(){
-  let liElem = createLiElement();
-  liElem.querySelector('.todo-list__item-text').innerText = document.querySelector('.header__input').value;
-  liElem.querySelector('.todo-list__item-content').setAttribute('id', Math.round(Math.random() * 100000));
-
-  return liElem;
-}
 
 function createObjForStorage(elem){
   const obj = {};
@@ -133,7 +144,7 @@ function watchFooterState(){
 }
 
 
-function createFilteredList(mas){
+function createFilteredList(mas){//rename 
   let fragment = document.createDocumentFragment();
     mas.forEach(el=>{
       let lielem = createLiElement();
@@ -235,10 +246,10 @@ function globalReloadlist(filterFlag){
 }
 
 document.querySelector('.header__input').addEventListener('change',(e)=>{
-  const liElem = createFullLiElement();
+  const liElem = createLiElement();
   let obj = createObjForStorage(liElem);
-  addObjtoStorage(obj);
 
+  addObjtoStorage(obj);
   document.querySelector('.todo-list').appendChild(liElem);
   e.target.value = '';
 
@@ -250,35 +261,16 @@ document.querySelector('.header__input').addEventListener('change',(e)=>{
 })
 
 
-document.querySelector('.main').addEventListener('click',(e)=>{
+document.querySelector('.toggle-all-label').addEventListener('click',(e)=>{
   const target = e.target;
+  let elementsNode = document.querySelectorAll('.todo-list__item-check + label'),
+  elements = Array.prototype.slice.call(elementsNode);
+  elements.every(el=> el.classList.contains('check')) ? removeCheckedAllItems(elements) : checkedAllItems(elements);
 
-  if(target.className == 'todo-list__item-check-label' || target.className == 'todo-list__item-check-label check'){
-    const id = target.closest('.todo-list__item-content').getAttribute('id');
-    updateStatusLi(id);
-    target.classList.toggle('check');
+  updateCounter();
+  watchToggleBtnState();
+  watchClearBtnState();
 
-    updateCounter();
-    globalReloadlist(store.getItem('footer-filter'));
-    watchToggleBtnState();
-  }else if(target.className == 'todo-list__item-close'){
-    const id = target.closest('.todo-list__item-content').getAttribute('id');
-    updateLocalArray(id);
-    target.closest('.todo-list__item').remove();
-
-    updateCounter();
-    watchToggleBtnState();
-    watchClearBtnState();
-    watchFooterState();
-  }else if(target.className == 'toggle-all-label'){
-    let elementsNode = document.querySelectorAll('.todo-list__item-check + label'),
-    elements = Array.prototype.slice.call(elementsNode);
-    elements.every(el=> el.classList.contains('check')) ? removeCheckedAllItems(elements) : checkedAllItems(elements);
-   
-    updateCounter();
-    watchToggleBtnState();
-    watchClearBtnState();
-  }
 })
 
 document.querySelector('.footer').addEventListener('click',(e)=>{
@@ -302,28 +294,3 @@ document.querySelector('.footer').addEventListener('click',(e)=>{
     updateFilterslinkClass(target);
   }
 })
-
-
-
-document.querySelector('.todo').addEventListener('dblclick',(e)=>{
-  const target = e.target;
- 
-  if(target.className == 'todo-list__item-text'){
-    let input = target.closest('.todo-list__item').querySelector('.edit');
-    const id = target.closest('.todo-list__item').querySelector('.todo-list__item-content').getAttribute('id');
-    console.log('dblclick');
-    input.classList.add('show');
-    input.focus();
-    input.addEventListener('change',(e)=>{
-      //console.log(input.value);
-      updateLiValue(id, input.value);
-      globalReloadlist(store.getItem('footer-filter'));
-    })
-    input.addEventListener('blur',(e)=>{
-      e.target.classList.remove('show');
-    })
-  }
-  
-})
-
-
