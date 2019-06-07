@@ -1,22 +1,34 @@
 const li = document.querySelector('.todo-list__item');
 
+const store = {
+  store: localStorage,
+
+  getItem: function(name) {
+    // get item
+    return JSON.parse(this.store.getItem(name));
+  },
+
+  setItem: function(name,mas) {
+    // get item
+    this.store.setItem(name, JSON.stringify(mas));
+  }
+};
+
 (reloadTodo1)();
 
-/*function createLiElement(){
-  return li.cloneNode(true);
-}*/
 
 function createLiElement(){
-  let li = document.createElement('li'),
-    div = document.createElement('div'),
-    input = document.createElement('input'),
+  let li = document.createElement('li');
+   /* div = document.createElement('div');
+
+  let  input = document.createElement('input'),
     input1 = document.createElement('input'),
     label = document.createElement('label'),
     span = document.createElement('span'),
-    button = document.createElement('button');
+    button = document.createElement('button');*/
 
   li.setAttribute('class','todo-list__item');
-  div.setAttribute('class', 'todo-list__item-content');
+  /*div.setAttribute('class', 'todo-list__item-content');
   input.setAttribute('type', 'checkbox');
   input.setAttribute('id', 'todo-list__item-check');
   input.setAttribute('class', 'todo-list__item-check');
@@ -27,31 +39,27 @@ function createLiElement(){
   button.setAttribute('class', 'todo-list__item-close');
   button.innerText = 'x';
 
+
   div.appendChild(input);
   div.appendChild(label);
   div.appendChild(span);
   div.appendChild(button);
 
   li.appendChild(div);
-  li.appendChild(input1);
+  li.appendChild(input1);*/
+
+  li.innerHTML = '<div class="todo-list__item-content"> <input type="checkbox" id="todo-list__item-check" class="todo-list__item-check"> <label class="todo-list__item-check-label" for="todo-list__item-check"></label> <span class="todo-list__item-text"></span><button class="todo-list__item-close">x</button></div><input class="edit">';
 
   return li;
 
 }
 
-function insertLi(){
+function createFullLiElement(){
   let liElem = createLiElement();
   liElem.querySelector('.todo-list__item-text').innerText = document.querySelector('.header__input').value;
   liElem.querySelector('.todo-list__item-content').setAttribute('id', Math.round(Math.random() * 100000));
+
   return liElem;
-}
-
-function setLocalStorage(name, mas){
-  localStorage.setItem(name, JSON.stringify(mas));
-}
-
-function getLocalStorage(name){
-  return JSON.parse(localStorage.getItem(name));
 }
 
 function createObjForStorage(elem){
@@ -63,51 +71,33 @@ function createObjForStorage(elem){
 }
 
 function addObjtoStorage(obj){
-  let localData = getLocalStorage('list') || [];
+  let localData = store.getItem('list') || [];
   localData.push(obj);
-  setLocalStorage('list',localData);
+  store.setItem('list',localData);
 }
 
 function updateStatusLi(id){
-  let localData = getLocalStorage('list');
+  let localData = store.getItem('list');
   localData.find(el=> {if(el.id == id) el.checked = !el.checked} );
-  setLocalStorage('list',localData);
+  store.setItem('list',localData);
 }
 
 function updateLiValue(id, newValue){
-  let localData = getLocalStorage('list');
+  let localData = store.getItem('list');
   localData.find(el=> {if(el.id == id) el.value = newValue} );
-  setLocalStorage('list',localData);
+  store.setItem('list',localData);
 }
 
 function updateLocalArray(id){
-  let localData = getLocalStorage('list');
+  let localData = store.getItem('list');
   localData.splice(localData.indexOf(localData.find(el=> el.id == id )),1);
-  setLocalStorage('list',localData);
+  store.setItem('list',localData);
 }
 
-/*function reloadTodo(filtrPos){
-  const mas = getLocalStorage('list') || [];
-
-  if(mas.length != 0){
-    let fragment = document.createDocumentFragment();
-    
-    mas.forEach(el=>{
-      let lielem = createLiElement();
-      lielem.querySelector('.todo-list__item-content').setAttribute('id', el.id);
-      lielem.querySelector('.todo-list__item-text').innerText = el.value;
-      if(el.checked) lielem.querySelector('.todo-list__item-check + label').classList.add('check');
-      fragment.appendChild(lielem);
-    });
-
-    document.querySelector('.todo-list').appendChild(fragment);
-  }
-  updateCounter();
-}*/
 
 function reloadTodo1(){
-  const mas = getLocalStorage('list') || [];
-  const filtrPos = getLocalStorage('footer-filter');
+  const mas = store.getItem('list') || [];
+  const filtrPos = store.getItem('footer-filter');
   document.querySelector(`.${filtrPos}`).classList.add('check');
   if(mas.length != 0){
     filtrPos == 'active' ? createFilteredList(mas.filter(el=> el.checked == false)) : 
@@ -123,7 +113,7 @@ function reloadTodo1(){
 }
 
 function watchToggleBtnState(){
-  const mas = getLocalStorage('list') || [];
+  const mas = store.getItem('list') || [];
   let toggleAllLabel = document.querySelector('.toggle-all-label'),
     toggleAll = document.querySelector('.toggle-all');
 
@@ -132,12 +122,12 @@ function watchToggleBtnState(){
 }
 
 function watchClearBtnState(){
-  const mas = getLocalStorage('list') || [];
+  const mas = store.getItem('list') || [];
   mas.some(el=> el.checked == true) ? document.querySelector('.clear-btn').classList.add('show') : document.querySelector('.clear-btn').classList.remove('show');
 }
 ////----------------------
 function watchFooterState(){
-  const mas = getLocalStorage('list') || [];
+  const mas = store.getItem('list') || [];
   let footer = document.querySelector('.footer');
   mas.length == 0 ? footer.classList.add('hide'): footer.classList.remove('hide');
 }
@@ -157,7 +147,7 @@ function createFilteredList(mas){
 }
 
 function updateCounter(){
-  const mas = getLocalStorage('list') || [];
+  const mas = store.getItem('list') || [];
   let counter = 0;
   if(mas.length != 0){
 
@@ -169,19 +159,12 @@ function updateCounter(){
   document.querySelector('.todo-count strong').innerText = counter;
 }
 
-/*document.querySelector('.header__input').addEventListener('keypress',(e)=>{
-  if(e.keyCode == 13 && document.querySelector('.header__input').value == /\s/g){
-    document.querySelector('.todo-list').appendChild(insertLi());
-    document.querySelector('.header__input').value = '';
-  }
-})*/
 
 function clearCompleted(){
-  const mas = getLocalStorage('list') || [];
+  const mas = store.getItem('list') || [];
   if(mas.length != 0){
-    setLocalStorage('list',mas.filter(element=> !element.checked));
+    store.setItem('list',mas.filter(element=> !element.checked));
   }
-  //setLocalStorage(mas);
 }
 
 function removeChildren() {
@@ -200,15 +183,15 @@ function removeAllChildren(elem) {
 }
 
 function addStatusLi(id){
-  let localData = getLocalStorage('list');
+  let localData = store.getItem('list');
   localData.find(el=> {if(el.id == id) el.checked = true} );
-  setLocalStorage('list',localData);
+  store.setItem('list',localData);
 }
 
 function removeStatusLi(id){
-  let localData = getLocalStorage('list');
+  let localData = store.getItem('list');
   localData.find(el=> {if(el.id == id) el.checked = false} );
-  setLocalStorage('list',localData);
+  store.setItem('list',localData);
 }
 
 function checkedAllItems(elements){
@@ -226,23 +209,6 @@ function removeCheckedAllItems(elements){
   })
 }
 
-//-------------
-/*function checkedAllItems(mas){
-  mas.forEach(el=>{
-    if(!el.checked) el.checked = true;
-    //console.log(el.closest('.todo-list__item-content').getAttribute('id'));
-    addStatusLi(el.closest('.todo-list__item-content').getAttribute('id'));
-  })
-}
-
-function removeCheckedAllItems(elements){
-  elements.forEach(el=> {
-    el.classList.remove('check');
-    removeStatusLi(el.closest('.todo-list__item-content').getAttribute('id'));
-  })
-}*/
-//========
-
 function hideContent(){
   document.querySelector('.todo-list').hasChildNodes() ? document.querySelector('.footer').classList.remove('hide') :
   document.querySelector('.footer').classList.add('hide');
@@ -250,7 +216,7 @@ function hideContent(){
 
 
 function setFooterFlag(item){
-  setLocalStorage('footer-filter', item);
+  store.setItem('footer-filter', item);
 }
 
 function updateFilterslinkClass(target){
@@ -269,7 +235,7 @@ function globalReloadlist(filterFlag){
 }
 
 document.querySelector('.header__input').addEventListener('change',(e)=>{
-  const liElem = insertLi();
+  const liElem = createFullLiElement();
   let obj = createObjForStorage(liElem);
   addObjtoStorage(obj);
 
@@ -277,16 +243,12 @@ document.querySelector('.header__input').addEventListener('change',(e)=>{
   e.target.value = '';
 
   updateCounter();
-  globalReloadlist(getLocalStorage('footer-filter'));
+  globalReloadlist(store.getItem('footer-filter'));
   watchFooterState();
   watchToggleBtnState();
   watchClearBtnState();
 })
 
-/*function toglleAll(){
-  let mas = getLocalStorage('list') || [];
-  mas.every(el=> el.checked == true) ? removeCheckedAllItems(elements) : checkedAllItems(elements);
-}*/
 
 document.querySelector('.main').addEventListener('click',(e)=>{
   const target = e.target;
@@ -297,7 +259,7 @@ document.querySelector('.main').addEventListener('click',(e)=>{
     target.classList.toggle('check');
 
     updateCounter();
-    globalReloadlist(getLocalStorage('footer-filter'));
+    globalReloadlist(store.getItem('footer-filter'));
     watchToggleBtnState();
   }else if(target.className == 'todo-list__item-close'){
     const id = target.closest('.todo-list__item-content').getAttribute('id');
@@ -355,7 +317,7 @@ document.querySelector('.todo').addEventListener('dblclick',(e)=>{
     input.addEventListener('change',(e)=>{
       //console.log(input.value);
       updateLiValue(id, input.value);
-      globalReloadlist(getLocalStorage('footer-filter'));
+      globalReloadlist(store.getItem('footer-filter'));
     })
     input.addEventListener('blur',(e)=>{
       e.target.classList.remove('show');
