@@ -91,6 +91,14 @@ a:link, a:visited, a:active{
   padding: 10px 20px;
 }
 
+.toggle-all.checked + label::before{
+  color: #737373;
+}
+
+.toggle-all-label.hide{
+  display: none;
+}
+
 .todo-list{
   margin: 0;
   padding: 0;
@@ -98,11 +106,28 @@ a:link, a:visited, a:active{
 }
 
 .todo-list__item{
+  position: relative;
   padding: 5px;
   font-size: 24px;
   border-bottom: 1px solid #ededed;
 }
 
+.edit{
+  position: absolute;
+  display: none;
+  top: 0;
+  right: 0;
+  width: 90%;
+  height: 100%;
+}
+
+/*.edit.show{
+  display: block;
+}*/
+
+.edit.show{
+  display: block;
+}
 
 .todo-list__item-content{
   display: flex;
@@ -132,6 +157,7 @@ a:link, a:visited, a:active{
 }
 
 .todo-list__item-text{
+  width: 80%;
   padding: 15px 20px;
 }
 
@@ -147,6 +173,8 @@ a:link, a:visited, a:active{
 .todo-list__item:hover .todo-list__item-close{
   display: block;
 }
+
+
 
 
 .footer{
@@ -207,6 +235,10 @@ a:link, a:visited, a:active{
   border-color: rgba(175, 47, 47, 0.2);
 }
 
+.filters__link.check{
+  border-color: rgba(175, 47, 47, 0.2);
+}
+
 .clear-btn{
   margin: 0;
   padding: 0;
@@ -214,7 +246,7 @@ a:link, a:visited, a:active{
   border: none;
   cursor: pointer;
   color: #777;
-  opacity: 1;
+  opacity: 0;
 }
 
 .clear-btn.show{
