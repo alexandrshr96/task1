@@ -72,6 +72,10 @@ function createLiElement(){
 
 }
 
+function editElement(){
+  
+}
+
 
 function createObjForStorage(elem){
   const obj = {};
@@ -245,24 +249,23 @@ function globalReloadlist(filterFlag){
   reloadTodo1();
 }
 
-document.querySelector('.header__input').addEventListener('change',(e)=>{
+function addListItems(){
+  let headerInput = document.querySelector('.header__input');
   const liElem = createLiElement();
   let obj = createObjForStorage(liElem);
 
   addObjtoStorage(obj);
   document.querySelector('.todo-list').appendChild(liElem);
-  e.target.value = '';
+  headerInput.value = '';
 
   updateCounter();
   globalReloadlist(store.getItem('footer-filter'));
   watchFooterState();
   watchToggleBtnState();
   watchClearBtnState();
-})
+}
 
-
-document.querySelector('.toggle-all-label').addEventListener('click',(e)=>{
-  const target = e.target;
+function toggleElements(){
   let elementsNode = document.querySelectorAll('.todo-list__item-check + label'),
   elements = Array.prototype.slice.call(elementsNode);
   elements.every(el=> el.classList.contains('check')) ? removeCheckedAllItems(elements) : checkedAllItems(elements);
@@ -270,8 +273,10 @@ document.querySelector('.toggle-all-label').addEventListener('click',(e)=>{
   updateCounter();
   watchToggleBtnState();
   watchClearBtnState();
+}
 
-})
+document.querySelector('.header__input').addEventListener('change',addListItems);
+document.querySelector('.toggle-all-label').addEventListener('click',toggleElements);
 
 document.querySelector('.footer').addEventListener('click',(e)=>{
   const target = e.target;
