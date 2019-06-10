@@ -60,6 +60,7 @@ class LiElement {
     updateCounter();
     //globalReloadlist(filterStore.getItem());
     watchToggleBtnState();
+    watchClearBtnState();
   }
 
   editLiValue(){
@@ -88,20 +89,21 @@ class LiElement {
 }
 
 class UlElement {
-  constructor(input){
-    this.input = input;
+  constructor(input,ul){
+    this.input = input,
+    this.ul = ul;
   }
 
   addListItems(){//call after press enter in header input
     if(event.keyCode === 13){
-      let headerInput = document.querySelector('.header__input'),
-        valueInput = document.querySelector('.header__input').value.trim();
+      let headerInput = document.querySelector(`.${this.input}`),
+        valueInput = headerInput.value.trim();
   
       if(valueInput != ''){
         const liElem = liElement.createLiElement();
         updateStorage(liElem);
   
-        document.querySelector('.todo-list').appendChild(liElem);
+        document.querySelector(`.${this.ul}`).appendChild(liElem);
         headerInput.value = '';
   
         updateCounter();
@@ -115,7 +117,7 @@ class UlElement {
 
   clearCheckedElements(){//call after press btn clear completed
     const array = listStore.getItem() || [];
-    let listItems = document.querySelectorAll('.todo-list__item');
+    let listItems = document.querySelectorAll(`.${this.ul}__item`);
   
     if(array.length != 0){
       listStore.setItem(array.filter(element=> !element.checked));
@@ -123,7 +125,7 @@ class UlElement {
   
     listItems.forEach(el=>{
       if(el.querySelector('.todo-list__item-check-label').classList.contains('check')){
-        document.querySelector('.todo-list').removeChild(el);
+        document.querySelector(`.${this.ul}`).removeChild(el);
       };
     })
   
@@ -133,19 +135,20 @@ class UlElement {
   }
 
   updateElementAll(){//call after press btn all
-    const list = document.querySelector('.todo-list');
+    const list = document.querySelector(`.${this.ul}`);
     globalReloadlist('all', list);
+    //updateFilterslinkClass(event.target);
     updateFilterslinkClass(event.target);
   }
   
   updateElementActive(){//call after press btn active
-    const list = document.querySelector('.todo-list');
+    const list = document.querySelector(`.${this.ul}`);
     globalReloadlist('active', list);
     updateFilterslinkClass(event.target);
   }
   
   updateElementComplete(){//call after press btn complete
-    const list = document.querySelector('.todo-list');
+    const list = document.querySelector(`.${this.ul}`);
     globalReloadlist('complete', list);
     updateFilterslinkClass(event.target);
   }
@@ -162,7 +165,7 @@ function updateFilterslinkClass(target){//call after press btn all,active,comple
 let filterStore = new Store('filter'),
    listStore = new Store('list'),
    liElement = new LiElement('header__input'),
-   todoUlElement = new UlElement('header__input');
+   todoUlElement = new UlElement('header__input','todo-list');
 
 (reloadTodo)();
 
@@ -295,9 +298,9 @@ function toggleElements(){//call after press btn toggle
   watchClearBtnState();
 }
 
-document.querySelector('.header__input').addEventListener('keydown',todoUlElement.addListItems);
+document.querySelector('.header__input').addEventListener('keydown',todoUlElement.addListItems.bind(todoUlElement));
 document.querySelector('.toggle-all-label').addEventListener('click',toggleElements);
-document.querySelector('.clear-btn').addEventListener('click', todoUlElement.clearCheckedElements);
-document.querySelector('.all').addEventListener('click', todoUlElement.updateElementAll);
-document.querySelector('.active').addEventListener('click', todoUlElement.updateElementActive);
-document.querySelector('.complete').addEventListener('click', todoUlElement.updateElementComplete);
+document.querySelector('.clear-btn').addEventListener('click', todoUlElement.clearCheckedElements.bind(todoUlElement));
+document.querySelector('.all').addEventListener('click', todoUlElement.updateElementAll.bind(todoUlElement));
+document.querySelector('.active').addEventListener('click', todoUlElement.updateElementActive.bind(todoUlElement));
+document.querySelector('.complete').addEventListener('click', todoUlElement.updateElementComplete.bind(todoUlElement));
